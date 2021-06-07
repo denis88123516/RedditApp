@@ -23,5 +23,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/time" />
+        app:layout_constraintTop_toBottomOf="@id/time"
+        android:onClick="ImageOnClick"/>
+
+    <TextView android:id="@+id/num_comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/thumbnail"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

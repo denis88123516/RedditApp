@@ -3,8 +3,12 @@ package com.example.redditapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +25,7 @@ import java.time.LocalDateTime;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-
+    String ImageUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 TextView author = (TextView) findViewById(R.id.author);
                 TextView time = (TextView) findViewById(R.id.time);
-                //ImageView thumbnailView = (ImageView) findViewById(R.id.thumbnail);
+                ImageView thumbnailView = (ImageView) findViewById(R.id.thumbnail);
+                TextView numCommentsView=(TextView)findViewById(R.id.num_comments);
                 try {
                     JSONObject top = getJson("https://reddit.com/top.json");
                     JSONObject data = top.getJSONObject("data");
@@ -39,10 +44,15 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject childrendata = _0item.getJSONObject("data");
                     String s = childrendata.getString("author");
                     Long created = childrendata.getLong("created_utc");
-                    //String thumbnailUrl=childrendata.getString("thumbnail");
+                    String thumbnailUrlStr=childrendata.getString("thumbnail");
+                    String numCommetns=childrendata.getString("num_comments");
                     author.setText(s);
                     time.setText(String.valueOf((System.currentTimeMillis() / 1000 - created) / 3600) + " hours ago");
-                    //thumbnailView.setsou
+                    URL thumbnailUrl = new URL(thumbnailUrlStr);
+                    Bitmap thumbnailBmp= BitmapFactory.decodeStream(thumbnailUrl.openConnection().getInputStream());
+                    thumbnailView.setImageBitmap(thumbnailBmp);
+                    numCommentsView.setText("Comments: "+numCommetns);
+                    ImageUrl=childrendata.getString("url");
                 } catch (IOException | JSONException e) {
                     author.setText("error");
                 }
@@ -51,6 +61,13 @@ public class MainActivity extends AppCompatActivity {
         loading.start();
         while (loading.isAlive());
     }
+
+    public void ImageOnClick(View viev) {
+        Intent intent = new Intent(this, ImageActivity.class);
+        intent.putExtra("Image_Url",ImageUrl);
+        startActivity(intent);
+    }
+
     private JSONObject getJson(String path) throws JSONException, IOException {
         String s=getContent(path);
         JSONObject jsonObject=new JSONObject(s);
